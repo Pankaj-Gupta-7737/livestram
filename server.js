@@ -70,11 +70,14 @@ function startStreaming() {
 // Server start
 const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 app.get("/start-stream", (req, res) => {
     startStreaming();
     res.send("Live stream started!");
+});
+app.get("/", (req, res) => {
+    res.send("Live Stream Running!");
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
