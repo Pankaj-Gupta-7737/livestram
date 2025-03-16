@@ -47,17 +47,29 @@ const RTMP_URL = "rtmp://a.rtmp.youtube.com/live2";
 
 function startStreaming() {
     const ffmpeg = spawn("ffmpeg", [
-        "-stream_loop", "-1",
-        "-re", // Real-time mode
+        // "-stream_loop", "-1",
+        // "-re", // Real-time mode
+        // "-i", VIDEO_PATH, // Input video file
+        // "-c:v", "libx264",
+        // "-preset", "fast",
+        // "-b:v", "2500k",
+        // "-maxrate", "2500k",
+        // "-bufsize", "5000k",
+        // "-g", "60",
+        // "-c:a", "aac",
+        // "-b:a", "128k",
+        // "-ar", "44100",
+        "-stream_loop", "-1",  // Infinite loop
+        "-re",  // Real-time mode
         "-i", VIDEO_PATH, // Input video file
         "-c:v", "libx264",
-        "-preset", "fast",
-        "-b:v", "2500k",
-        "-maxrate", "2500k",
-        "-bufsize", "5000k",
-        "-g", "60",
+        "-preset", "veryfast", // Faster encoding, less CPU usage
+        "-b:v", "400k", // Lower bitrate as per YouTube suggestion
+        "-maxrate", "500k", // Slightly higher max bitrate
+        "-bufsize", "1000k", // Buffer to reduce lag
+        "-g", "50", // Keyframe interval
         "-c:a", "aac",
-        "-b:a", "128k",
+        "-b:a", "96k", // Lower audio bitrate
         "-ar", "44100",
         "-f", "flv", `${RTMP_URL}/${STREAM_KEY}`
     ]);
