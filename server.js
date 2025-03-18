@@ -5,7 +5,7 @@ const path = require("path");
 
 const STREAM_KEY = "sy5h-4f76-t0ah-bmsf-fav9";  // YouTube Stream Key
 const RTMP_URL = "rtmp://a.rtmp.youtube.com/live2";
-const VIDEO_PATH = path.join(__dirname, "public", "pp.mp4");  // Local video file ka path
+const VIDEO_PATH = path.join(__dirname, "pp.mp4");  // Local video file ka path
 
 function startStreaming() {
     // const ffmpeg = spawn("ffmpeg", [
