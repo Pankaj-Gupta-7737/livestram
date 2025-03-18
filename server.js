@@ -30,9 +30,9 @@ function startStreaming() {
         "-c:v", "libx264",
         "-preset", "fast",
         
-      "-b:v", "1500k",
-        "-maxrate", "1500k",
-        "-bufsize", "3000k",
+      "-b:v", "800k",
+        "-maxrate", "800k",
+        "-bufsize", "1600k",
         "-g", "50",
         "-c:a", "aac",
         "-b:a", "128k",
