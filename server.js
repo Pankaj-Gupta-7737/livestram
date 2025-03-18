@@ -26,7 +26,7 @@ function startStreaming() {
     const ffmpeg = spawn("ffmpeg", [
         "-stream_loop", "-1",
         "-re",
-        "-i", "pp.mp4",
+        "-i", VIDEO_PATH,
         "-c:v", "libx264",
         "-preset", "fast",
         "-b:v", "2500k",
