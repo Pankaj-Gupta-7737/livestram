@@ -24,8 +24,6 @@ function startStreaming() {
     //     "-f", "flv", `${RTMP_URL}/${STREAM_KEY}`
     // ]);
     const ffmpeg = spawn("ffmpeg", [
-        "-loglevel", "debug", // Debug mode
-    "-report", 
         "-stream_loop", "-1",
         "-re",
         "-i", VIDEO_PATH,
