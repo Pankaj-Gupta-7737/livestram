@@ -29,7 +29,7 @@ function startStreaming() {
         "-i", VIDEO_PATH,
         "-c:v", "libx264",
         "-preset", "fast",
-        "-b:v", "2500k",
+        
       "-b:v", "1500k",
         "-maxrate", "1500k",
         "-bufsize", "3000k",
