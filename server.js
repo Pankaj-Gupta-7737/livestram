@@ -24,15 +24,18 @@ function startStreaming() {
     //     "-f", "flv", `${RTMP_URL}/${STREAM_KEY}`
     // ]);
     const ffmpeg = spawn("ffmpeg", [
+        "-loglevel", "debug", // Debug mode
+    "-report", 
         "-stream_loop", "-1",
         "-re",
         "-i", VIDEO_PATH,
         "-c:v", "libx264",
         "-preset", "fast",
         "-b:v", "2500k",
-        "-maxrate", "2500k",
-        "-bufsize", "5000k",
-        "-g", "60",
+      "-b:v", "1500k",
+        "-maxrate", "1500k",
+        "-bufsize", "3000k",
+        "-g", "50",
         "-c:a", "aac",
         "-b:a", "128k",
         "-ar", "44100",
