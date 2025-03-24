@@ -70,30 +70,47 @@ async function updateScore() {
 
 
 // Function to start streaming
-function startStreaming() {
-    const ffmpeg = spawn("ffmpeg", [
-        "-stream_loop", "-1",
-        "-re",
-        "-i", VIDEO_PATH,
-        "-vf", `drawtext=fontfile='C\\:/Windows/Fonts/arial.ttf':textfile=score.txt:x=10:y=50:fontsize=40:fontcolor=white:box=1:boxcolor=black@0.7:boxborderw=10:reload=1`,
-        "-c:v", "libx264",
-        "-preset", "ultrafast",    // ✅ Lower CPU Usage
-        "-b:v", "4500k",          // ✅ Higher Bitrate for Smooth Streaming
-        "-maxrate", "5000k",      // ✅ Avoid Bitrate Drops
-        "-bufsize", "10000k",     // ✅ Prevent Buffering
-        "-g", "60",               // ✅ Improve Keyframe Interval
-    
-        // ✅ Audio Fix
-        "-c:a", "aac",
-        "-b:a", "128k",
-        "-ar", "44100",
-        "-ac", "2",      // ✅ Stereo Audio (L/R Channels)
-        "-f", "flv", `${RTMP_URL}/${STREAM_KEY}`
-    ]);
+const TARGET_MATCH_ID = "c6e97609-d9c1-46eb-805a-e282b34f3bb1";
 
-    ffmpeg.stdout.on("data", (data) => console.log(`STDOUT: ${data}`));
-    ffmpeg.stderr.on("data", (data) => console.error(`STDERR: ${data}`));
-    ffmpeg.on("close", (code) => console.log(`Process exited with code ${code}`));
+// Function to fetch and update score
+async function updateScore() {
+    try {
+        const response = await axios.get(API_URL);
+        const data = response.data;
+
+        if (!data || !data.data || data.data.length === 0) {
+            console.log("⛔ No live match found.");
+            return;
+        }
+
+        // 🎯 Sirf specified match ID ka data nikalo
+        const match = data.data.find(m => m.id === TARGET_MATCH_ID);
+
+        if (!match) {
+            console.log("⛔ Specified match ID ka match nahi mila.");
+            return;
+        }
+
+        let scoreText = `🏏 ${match.name}\n`;
+        scoreText += `📍 Venue: ${match.venue}\n`;
+        scoreText += `📅 Date: ${match.date}\n`;
+        scoreText += `🔹 Status: ${match.status}\n`;
+
+        if (match.score && match.score.length > 0) {
+            match.score.forEach(inning => {
+                scoreText += `🏏 ${inning.inning} - ${inning.r}/${inning.w} (${inning.o} overs)\n`;
+            });
+        } else {
+            scoreText += "⚠️ Match not started yet.\n";
+        }
+
+        // 📂 Score file update karo
+        fs.writeFileSync(SCORE_FILE, scoreText);
+        console.log("✅ Score updated successfully:\n", scoreText);
+
+    } catch (error) {
+        console.error("❌ Error fetching score:", error.message);
+    }
 }
 
 // Express Server
