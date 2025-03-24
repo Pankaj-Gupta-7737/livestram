@@ -52,8 +52,7 @@ async function updateScore() {
 }
 
 // Har 30 sec me score update hoga
-setInterval(updateScore, 15000);
-updateScore();
+
 
 // Function to start streaming
 function startStreaming() {
@@ -89,15 +88,19 @@ const PORT = process.env.PORT || 8080;
 app.use(express.static("public"));
 
 app.get("/start-stream", (req, res) => {
+  
     startStreaming();
     res.send("Live stream started!");
 });
 
 app.get("/", (req, res) => {
+    setInterval(updateScore, 1500);
+    updateScore();
     res.send("Live Stream Running!");
 });
 
 app.listen(PORT, () => {
+
     console.log(`Server running on port ${PORT}`);
      // Auto start on Railway
 });
