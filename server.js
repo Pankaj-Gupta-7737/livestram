@@ -94,7 +94,7 @@ app.get("/start-stream", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-    setInterval(updateScore, 1500);
+    setInterval(updateScore, 15000);
     updateScore();
     res.send("Live Stream Running!");
 });
