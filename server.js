@@ -9,7 +9,8 @@ const STREAM_KEY = "sy5h-4f76-t0ah-bmsf-fav9"; // YouTube Stream Key
 const RTMP_URL = "rtmp://a.rtmp.youtube.com/live2";
 const VIDEO_PATH = path.join(__dirname, "pp.mp4"); // Local video file ka path
 const SCORE_FILE = path.join(__dirname, "score.txt");
-const API_URL = "https://api.cricapi.com/v1/cricScore?apikey=e29b5bb4-5bdf-4715-8434-70e73a3e5717";
+const API_KEY = process.env.CRIC_API_KEY;
+const API_URL = `https://api.cricapi.com/v1/cricScore?apikey=${API_KEY}`;
 
 // Function to fetch and update score
 async function updateScore() {
@@ -17,23 +18,28 @@ async function updateScore() {
         const response = await axios.get(API_URL);
         const data = response.data;
 
-        if (data && data.data.length > 0) {
-            // DC vs LSG match dhoondhne ke liye filter
-            const match = data.data.find(m => m.teams.includes("Delhi Capitals") && m.teams.includes("Lucknow Super Giants"));
+        if (data && data.data && data.data.length > 0) {
+            // Pehle check karenge ki `match.t1` aur `match.t2` exist karte hain ya nahi
+            const match = data.data.find(m => 
+                m.t1 && m.t2 && 
+                ((m.t1.includes("Delhi Capitals") && m.t2.includes("Lucknow Super Giants")) ||
+                 (m.t1.includes("Lucknow Super Giants") && m.t2.includes("Delhi Capitals")))
+            );
 
             if (match) {
-                let scoreText = `${match.teams[0]} vs ${match.teams[1]}\n`;
-                scoreText += `${match.status}\n`;
+                let scoreText = `🏏 ${match.series}\n${match.t1} vs ${match.t2}\n`;
+                scoreText += `📍 ${match.status}\n`;
 
-                if (match.score.length > 0) {
-                    match.score.forEach(s => {
-                        scoreText += `${s.inning}: ${s.r}/${s.w} (${s.o} Overs)\n`;
-                    });
+                if (match.t1s || match.t2s) {
+                    scoreText += `🔹 ${match.t1}: ${match.t1s || "Yet to bat"}\n`;
+                    scoreText += `🔹 ${match.t2}: ${match.t2s || "Yet to bat"}\n`;
+                } else {
+                    scoreText += "Match not started\n";
                 }
 
                 // Score file update karo
                 fs.writeFileSync(SCORE_FILE, `IPL Live Score:\n${scoreText}`);
-                console.log("Score updated:", scoreText);
+                console.log("Score updated:\n", scoreText);
             } else {
                 console.log("DC vs LSG ka match nahi mila.");
             }
@@ -55,7 +61,7 @@ function startStreaming() {
         "-stream_loop", "-1",
         "-re",
         "-i", VIDEO_PATH,
-        "-vf", "drawtext=fontfile='C\\:/Windows/Fonts/arial.ttf':textfile=score.txt:x=10:y=50:fontsize=24:fontcolor=white:reload=1",
+        "-vf", `drawtext=fontfile='C\\:/Windows/Fonts/arial.ttf':textfile=score.txt:x=10:y=50:fontsize=40:fontcolor=white:box=1:boxcolor=black@0.7:boxborderw=10:reload=1`,
         "-c:v", "libx264",
         "-preset", "ultrafast",    // ✅ Lower CPU Usage
         "-b:v", "4500k",          // ✅ Higher Bitrate for Smooth Streaming
