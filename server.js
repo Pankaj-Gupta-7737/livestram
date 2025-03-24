@@ -10,7 +10,9 @@ const RTMP_URL = "rtmp://a.rtmp.youtube.com/live2";
 const VIDEO_PATH = path.join(__dirname, "pp1.mp4"); // Local video file ka path
 const SCORE_FILE = path.join(__dirname, "score.txt");
 const API_KEY = process.env.CRIC_API_KEY;
-const API_URL = `https://api.cricapi.com/v1/cricScore?apikey=${API_KEY}`;
+
+const API_URL = `https://api.cricapi.com/v1/currentMatches?apikey=${API_KEY}&offset=0`;
+
 
 // Function to fetch and update score
 async function updateScore() {
@@ -18,38 +20,51 @@ async function updateScore() {
         const response = await axios.get(API_URL);
         const data = response.data;
 
-        if (data && data.data && data.data.length > 0) {
-            // Pehle check karenge ki `match.t1` aur `match.t2` exist karte hain ya nahi
-            const match = data.data.find(m => 
-                m.t1 && m.t2 && 
-                ((m.t1.includes("Delhi Capitals") && m.t2.includes("Lucknow Super Giants")) ||
-                 (m.t1.includes("Lucknow Super Giants") && m.t2.includes("Delhi Capitals")))
-            );
-
-            if (match) {
-                let scoreText = `🏏 ${match.series}\n${match.t1} vs ${match.t2}\n`;
-                scoreText += `📍 ${match.status}\n`;
-
-                if (match.t1s || match.t2s) {
-                    scoreText += `🔹 ${match.t1}: ${match.t1s || "Yet to bat"}\n`;
-                    scoreText += `🔹 ${match.t2}: ${match.t2s || "Yet to bat"}\n`;
-                } else {
-                    scoreText += "Match not started\n";
-                }
-
-                // Score file update karo
-                fs.writeFileSync(SCORE_FILE, `IPL Live Score:\n${scoreText}`);
-                console.log("Score updated:\n", scoreText);
-            } else {
-                console.log("DC vs LSG ka match nahi mila.");
-            }
-        } else {
-            console.log("Koi live match nahi mila.");
+        if (!data || !data.data || data.data.length === 0) {
+            console.log("⛔ No live match found.");
+            return;
         }
+
+        // Delhi Capitals vs Lucknow Super Giants ka match hata rahe hain
+        const matches = data.data.filter(m => 
+            !m.teams.includes("Delhi Capitals") || !m.teams.includes("Lucknow Super Giants")
+        );
+
+        if (matches.length === 0) {
+            console.log("⛔ No other match available.");
+            return;
+        }
+
+        let scoreText = "🏏 IPL Live Score Updates:\n\n";
+        
+        matches.forEach(match => {
+            scoreText += `📢 ${match.name}\n`;
+            scoreText += `📍 Venue: ${match.venue}\n`;
+            scoreText += `📅 Date: ${match.date}\n`;
+            scoreText += `🔹 Status: ${match.status}\n`;
+
+            if (match.score && match.score.length > 0) {
+                match.score.forEach(inning => {
+                    scoreText += `🏏 ${inning.inning} - ${inning.r}/${inning.w} (${inning.o} overs)\n`;
+                });
+            } else {
+                scoreText += "⚠️ Score not available yet.\n";
+            }
+
+            scoreText += "\n-------------------------\n";
+        });
+
+        // Score file update karo
+        fs.writeFileSync(SCORE_FILE, scoreText);
+        console.log("✅ Score updated successfully:\n", scoreText);
+
     } catch (error) {
-        console.error("Score fetch karne me error:", error.message);
+        console.error("❌ Error fetching score:", error.message);
     }
 }
+
+// Call function
+
 
 // Har 30 sec me score update hoga
 
