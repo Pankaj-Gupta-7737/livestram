@@ -52,8 +52,7 @@ async function updateScore() {
 }
 
 // Har 30 sec me score update hoga
-setInterval(updateScore, 30000);
-updateScore();
+
 
 // Function to start streaming
 function startStreaming() {
@@ -89,6 +88,8 @@ const PORT = process.env.PORT || 8080;
 app.use(express.static("public"));
 
 app.get("/start-stream", (req, res) => {
+    setInterval(updateScore, 30000);
+updateScore();
     startStreaming();
     res.send("Live stream started!");
 });
