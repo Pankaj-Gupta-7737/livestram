@@ -114,7 +114,7 @@ const VIDEO_PATH = path.join(__dirname, "pp.mp4"); // Local video file ka path
 const SCORE_FILE = path.join(__dirname, "score.txt");
 const API_KEY = process.env.CRIC_API_KEY;
 const API_URL = `https://api.cricapi.com/v1/currentMatches?apikey=${API_KEY}&offset=0`;
-const TARGET_MATCH_ID = "c6e97609-d9c1-46eb-805a-e282b34f3bb1";
+const TARGET_MATCH_ID = "83d70527-5fc4-4fad-8dd2-b88b385f379e";
 
 let ffmpegProcess = null; // 🔴 FFmpeg process ko track karne ke liye
 
