@@ -110,7 +110,7 @@ const axios = require("axios");
 
 const STREAM_KEY = "sy5h-4f76-t0ah-bmsf-fav9"; // YouTube Stream Key
 const RTMP_URL = "rtmp://a.rtmp.youtube.com/live2";
-const VIDEO_PATH = path.join(__dirname, "pp.mp4"); // Local video file ka path
+const VIDEO_PATH = path.join(__dirname, "pp1.mp4"); // Local video file ka path
 const SCORE_FILE = path.join(__dirname, "score.txt");
 const API_KEY = process.env.CRIC_API_KEY;
 const API_URL = `https://api.cricapi.com/v1/currentMatches?apikey=${API_KEY}&offset=0`;
